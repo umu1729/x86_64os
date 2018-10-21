@@ -1,0 +1,62 @@
+
+メモリ設定
+
+名前           原点             長さ             属性
+exec_file        0x0000000000000000 0x0000000000100000 r
+ram              0x0000000000110000 0x00000000000f0000 xw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+リンカスクリプトおよびメモリマップ
+
+
+.header         0x0000000000000000       0x10
+                0x0000000000000000        0x8 QUAD 0x11a580 __bss_start
+                0x0000000000000008        0x8 QUAD 0x0 (__bss_end - __bss_start)
+
+.body           0x0000000000110000     0xa630 ロードアドレス 0x0000000000000010
+ *(.text)
+ .text          0x0000000000110000       0x76 main.o
+                0x0000000000110000                start_kernel(void*, framebuffer*, void*)
+ .text          0x0000000000110076        0x0 font.o
+ .text          0x0000000000110076      0x274 vcon.o
+                0x0000000000110076                VRAMController::VRAMController(framebuffer*)
+                0x0000000000110076                VRAMController::VRAMController(framebuffer*)
+                0x0000000000110120                VRAMController::put(char)
+                0x0000000000110296                VRAMController::puts(char*)
+ *(.rodata)
+ *fill*         0x00000000001102ea        0x6 
+ .rodata        0x00000000001102f0       0x7f main.o
+ *fill*         0x000000000011036f       0x11 
+ .rodata        0x0000000000110380     0xa200 font.o
+                0x0000000000110380                fontmap
+ *(.data)
+ .data          0x000000000011a580        0x0 main.o
+ .data          0x000000000011a580        0x0 font.o
+ .data          0x000000000011a580        0x0 vcon.o
+                0x000000000011a580                __bss_start = .
+ *(.bss)
+ .bss           0x000000000011a580        0x0 main.o
+ .bss           0x000000000011a580        0x0 font.o
+ .bss           0x000000000011a580        0x0 vcon.o
+                0x000000000011a580                __bss_end = .
+ *(.eh_frame)
+ .eh_frame      0x000000000011a580       0x38 main.o
+ .eh_frame      0x000000000011a5b8       0x78 vcon.o
+LOAD main.o
+LOAD font.o
+LOAD vcon.o
+OUTPUT(kernel.bin binary)
+
+.comment        0x0000000000000000       0x84
+ .comment       0x0000000000000000       0x2c main.o
+ .comment       0x000000000000002c       0x2c font.o
+ .comment       0x0000000000000058       0x2c vcon.o
+
+.note.GNU-stack
+                0x0000000000000000        0x0
+ .note.GNU-stack
+                0x0000000000000000        0x0 main.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 font.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 vcon.o
